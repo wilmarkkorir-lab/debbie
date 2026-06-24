@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Debbie... 👀</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a0a2e;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Floating hearts background ── */
+    .hearts-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .heart-float {
+      position: absolute;
+      bottom: -60px;
+      font-size: 1.6rem;
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(-10deg); opacity: 0; }
+      10%  { opacity: 0.8; }
+      90%  { opacity: 0.6; }
+      100% { transform: translateY(-110vh) rotate(15deg); opacity: 0; }
+    }
+
+    /* ── Card ── */
+    .card {
+      position: relative;
+      z-index: 10;
+      background: rgba(255,255,255,0.12);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border: 1.5px solid rgba(255,255,255,0.28);
+      border-radius: 28px;
+      padding: 48px 44px 44px;
+      max-width: 520px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 8px 60px rgba(255, 80, 140, 0.35);
+    }
+
+    .emoji-big {
+      font-size: 3.4rem;
+      margin-bottom: 16px;
+      display: block;
+      animation: wobble 2.4s ease-in-out infinite;
+    }
+    @keyframes wobble {
+      0%,100% { transform: rotate(-4deg) scale(1); }
+      50%      { transform: rotate(4deg) scale(1.08); }
+    }
+
+    h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.1rem;
+      color: #fff;
+      line-height: 1.5;
+      margin-bottom: 32px;
+      text-shadow: 0 2px 16px rgba(255,80,140,0.7), 0 0px 2px rgba(0,0,0,0.9);
+      font-weight: 700;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 14px 38px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, #ff6faf, #ff3380);
+      color: #fff;
+      box-shadow: 0 4px 24px rgba(255,80,140,0.55);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    .btn-yes:hover {
+      transform: scale(1.07);
+      box-shadow: 0 6px 32px rgba(255,80,140,0.7);
+    }
+    .btn-yes:active { transform: scale(0.97); }
+
+    .btn-no {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.5);
+      position: fixed;
+      pointer-events: none; /* completely unclickable */
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    /* attempt counter */
+    #attempt-msg {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.15);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 50px;
+      padding: 8px 22px;
+      color: #fff;
+      font-size: 0.92rem;
+      font-weight: 700;
+      z-index: 200;
+      display: none;
+      white-space: nowrap;
+    }
+
+    /* ── YES screen ── */
+    #yes-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      background: linear-gradient(135deg, #ff3380 0%, #c0006e 40%, #7b0038 100%);
+      animation: fadeInBg 0.8s ease forwards;
+    }
+    @keyframes fadeInBg {
+      from { opacity: 0; transform: scale(0.96); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    #yes-screen .sparkle-row {
+      font-size: 2.4rem;
+      letter-spacing: 8px;
+      margin-bottom: 24px;
+      animation: sparkleIn 0.6s ease 0.3s both;
+    }
+    @keyframes sparkleIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #yes-screen p {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.4rem;
+      color: #fff;
+      line-height: 1.6;
+      text-align: center;
+      max-width: 500px;
+      padding: 0 24px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.8);
+      font-weight: 700;
+      animation: msgIn 0.7s ease 0.5s both;
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #yes-screen .emoji-burst {
+      font-size: 3rem;
+      margin-top: 28px;
+      animation: burst 0.6s ease 1s both;
+    }
+    @keyframes burst {
+      0%   { transform: scale(0); opacity: 0; }
+      60%  { transform: scale(1.25); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* falling petals on yes screen */
+    .petal {
+      position: fixed;
+      top: -30px;
+      font-size: 1.4rem;
+      animation: petalFall linear infinite;
+      pointer-events: none;
+    }
+    @keyframes petalFall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
+    }
+
+    /* shake animation when escape triggered */
+    @keyframes shakeNo {
+      0%,100% { transform: scale(1); }
+      25% { transform: scale(1.15) rotate(-5deg); }
+      75% { transform: scale(1.15) rotate(5deg); }
+    }
+    .btn-no.shaking {
+      animation: shakeNo 0.25s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating hearts background -->
+  <div class="hearts-bg" id="heartsBg"></div>
+
+  <!-- Attempt counter -->
+  <div id="attempt-msg">😏 Attempt <span id="attempt-count">1</span>/30 — it's not going to work!</div>
+
+  <!-- Main question card -->
+  <div class="card" id="main-card">
+    <span class="emoji-big">🥹</span>
+    <h1>Debbie… wee ni lele na umemkufia Mellow sindio? 🥹🥹🥹<br><br>…sema tu ukweli.</h1>
+    <div class="buttons">
+      <button class="btn btn-yes" id="yesBtn">💖 Yes</button>
+      <button class="btn btn-no" id="noBtn">No 😅</button>
+    </div>
+  </div>
+
+  <!-- YES screen -->
+  <div id="yes-screen">
+    <div class="sparkle-row">💘✨💘✨💘</div>
+    <p>I knew you'd say yes 😂😂<br>but mbona ukatuficha all along 🥹🥹🥹</p>
+    <div class="emoji-burst">🌹💕🌹</div>
+  </div>
+
+  <script>
+    /* ── Floating hearts on load ── */
+    const heartsBg = document.getElementById('heartsBg');
+    const heartEmojis = ['❤️','💖','💗','💓','💞','💝','🌹','✨'];
+    for (let i = 0; i < 28; i++) {
+      const h = document.createElement('span');
+      h.className = 'heart-float';
+      h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+      h.style.left = Math.random() * 100 + 'vw';
+      h.style.fontSize = (1.1 + Math.random() * 1.4) + 'rem';
+      const dur = 5 + Math.random() * 8;
+      h.style.animationDuration = dur + 's';
+      h.style.animationDelay = (Math.random() * dur) + 's';
+      heartsBg.appendChild(h);
+    }
+
+    /* ── Runaway NO button ── */
+    const noBtn = document.getElementById('noBtn');
+    const attemptMsg = document.getElementById('attempt-msg');
+    const attemptCountEl = document.getElementById('attempt-count');
+    const MAX_ATTEMPTS = 30;
+    let attempts = 0;
+
+    // Funny taunts by attempt range
+    const taunts = [
+      "😏 Nice try! Attempt {n}/30",
+      "🏃 Too slow! Attempt {n}/30",
+      "😂 It keeps running! Attempt {n}/30",
+      "🤭 You can't catch it! Attempt {n}/30",
+      "💨 Zoom zoom! Attempt {n}/30",
+      "😜 Maybe try the YES button? Attempt {n}/30",
+      "🙈 It's scared of you! Attempt {n}/30",
+      "🥹 Just press YES… Attempt {n}/30",
+    ];
+
+    function getRandomPos() {
+      const btnW = noBtn.offsetWidth || 120;
+      const btnH = noBtn.offsetHeight || 50;
+      const margin = 20;
+      const x = margin + Math.random() * (window.innerWidth  - btnW - margin * 2);
+      const y = margin + Math.random() * (window.innerHeight - btnH - margin * 2);
+      return { x, y };
+    }
+
+    // Place button initially at a random spot
+    const init = getRandomPos();
+    noBtn.style.left = init.x + 'px';
+    noBtn.style.top  = init.y + 'px';
+
+    // Move multiple times on each escape trigger
+    function multiEscape() {
+      if (attempts >= MAX_ATTEMPTS) return;
+      attempts++;
+
+      // Update attempt counter display
+      attemptMsg.style.display = 'block';
+      const taunt = taunts[Math.floor(Math.random() * taunts.length)].replace('{n}', attempts);
+      attemptMsg.textContent = taunt;
+      attemptCountEl && (attemptCountEl.textContent = attempts);
+
+      // Move the button 3 times rapidly
+      const moves = 3;
+      let movesDone = 0;
+      function doMove() {
+        if (movesDone >= moves) return;
+        const p = getRandomPos();
+        noBtn.style.transition = 'left 0.12s ease, top 0.12s ease';
+        noBtn.style.left = p.x + 'px';
+        noBtn.style.top  = p.y + 'px';
+        movesDone++;
+        setTimeout(doMove, 130);
+      }
+      doMove();
+
+      // Shake animation
+      noBtn.classList.remove('shaking');
+      void noBtn.offsetWidth; // reflow
+      noBtn.classList.add('shaking');
+      setTimeout(() => noBtn.classList.remove('shaking'), 300);
+
+      // After 30 attempts, taunt changes
+      if (attempts >= MAX_ATTEMPTS) {
+        attemptMsg.textContent = `😤 30 attempts… just press YES already!!`;
+      }
+    }
+
+    // Use a proximity detector since button is pointer-events:none
+    // Track mouse/touch and trigger escape when cursor gets close
+    function checkProximity(cx, cy) {
+      const rect = noBtn.getBoundingClientRect();
+      const btnCx = rect.left + rect.width / 2;
+      const btnCy = rect.top  + rect.height / 2;
+      const dist = Math.hypot(cx - btnCx, cy - btnCy);
+      const threshold = Math.max(rect.width, rect.height) * 1.1; // slightly larger than button
+      if (dist < threshold) {
+        multiEscape();
+      }
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      checkProximity(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('touchmove', (e) => {
+      const t = e.touches[0];
+      checkProximity(t.clientX, t.clientY);
+    }, { passive: true });
+
+    document.addEventListener('touchstart', (e) => {
+      const t = e.touches[0];
+      checkProximity(t.clientX, t.clientY);
+    }, { passive: true });
+
+    /* ── YES button ── */
+    document.getElementById('yesBtn').addEventListener('click', () => {
+      document.getElementById('main-card').style.display = 'none';
+      noBtn.style.display = 'none';
+      attemptMsg.style.display = 'none';
+
+      const yesScreen = document.getElementById('yes-screen');
+      yesScreen.style.display = 'flex';
+
+      // spawn falling petals
+      const petals = ['🌸','🌹','💖','💕','🌺','✨','💗'];
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('span');
+        p.className = 'petal';
+        p.textContent = petals[Math.floor(Math.random() * petals.length)];
+        p.style.left = Math.random() * 100 + 'vw';
+        const dur = 3 + Math.random() * 5;
+        p.style.animationDuration = dur + 's';
+        p.style.animationDelay    = (Math.random() * 4) + 's';
+        p.style.fontSize = (1.1 + Math.random() * 1.2) + 'rem';
+        yesScreen.appendChild(p);
+      }
+    });
+  </script>
+</body>
+</html>
